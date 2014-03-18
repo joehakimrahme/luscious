@@ -1,2 +1,31 @@
 def get_jsonschema(schema):
-    pass
+    return {
+        "$schema": "http://json-schema.org/draft-04/schema#",
+        "title": "Product",
+        "description": "A product from Acme's catalog",
+        "type": "object",
+        "properties": {
+            "id": {
+                "description": "The unique identifier for a product",
+                "type": "integer"
+            },
+            "name": {
+                "description": "Name of the product",
+                "type": "string"
+            },
+            "price": {
+                "type": "number",
+                "minimum": 0,
+                "exclusiveMinimum": True
+            },
+            "tags": {
+                "type": "array",
+                "items": {
+                    "type": "string"
+                },
+                "minItems": 1,
+                "uniqueItems": True
+            }
+        },
+        "required": ["id", "name", "price"]
+    }

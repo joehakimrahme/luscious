@@ -43,16 +43,112 @@ class Example1Test(unittest.TestCase):
             "tags": ["home", "green"]
         }
 
-        self.assertIsNone(jsonschema.validate(self.jsonschema, instance))
+        self.assertIsNone(jsonschema.validate(instance, self.jsonschema))
 
     def test_non_int_id(self):
 
         instance = {
-            "id": 1,
+            "id": "1",
             "name": "A green door",
             "price": 10,
             "tags": ["home", "green"]
         }
 
         self.assertRaises(jsonschema.exceptions.ValidationError,
-                          jsonschema.validate, self.jsonschema, instance)
+                          jsonschema.validate, instance, self.jsonschema)
+
+    def test_non_str_name(self):
+
+        instance = {
+            "id": 1,
+            "name": 0,
+            "price": 10,
+            "tags": ["home", "green"]
+        }
+
+        self.assertRaises(jsonschema.exceptions.ValidationError,
+                          jsonschema.validate, instance, self.jsonschema)
+
+    def test_zero_price(self):
+
+        instance = {
+            "id": 1,
+            "name": "A green door",
+            "price": 0,
+            "tags": ["home", "green"]
+        }
+
+        self.assertRaises(jsonschema.exceptions.ValidationError,
+                          jsonschema.validate, instance, self.jsonschema)
+
+    def test_negative_price(self):
+
+        instance = {
+            "id": 1,
+            "name": "A green door",
+            "price": -5,
+            "tags": ["home", "green"]
+        }
+
+        self.assertRaises(jsonschema.exceptions.ValidationError,
+                          jsonschema.validate, instance, self.jsonschema)
+
+    def test_non_int_price(self):
+
+        instance = {
+            "id": 1,
+            "name": "A green door",
+            "price": "10",
+            "tags": ["home", "green"]
+        }
+
+        self.assertRaises(jsonschema.exceptions.ValidationError,
+                          jsonschema.validate, instance, self.jsonschema)
+
+    def test_non_list_tags(self):
+
+        instance = {
+            "id": 1,
+            "name": "A green door",
+            "price": 10,
+            "tags": "home",
+        }
+
+        self.assertRaises(jsonschema.exceptions.ValidationError,
+                          jsonschema.validate, instance, self.jsonschema)
+
+    def test_non_stringlist_tags(self):
+
+        instance = {
+            "id": 1,
+            "name": "A green door",
+            "price": 10,
+            "tags": ["home", 5],
+        }
+
+        self.assertRaises(jsonschema.exceptions.ValidationError,
+                          jsonschema.validate, instance, self.jsonschema)
+
+    def test_non_unique_tags(self):
+
+        instance = {
+            "id": 1,
+            "name": "A green door",
+            "price": 10,
+            "tags": ["home", "home"],
+        }
+
+        self.assertRaises(jsonschema.exceptions.ValidationError,
+                          jsonschema.validate, instance, self.jsonschema)
+
+    def test_empty_tags(self):
+
+        instance = {
+            "id": 1,
+            "name": "A green door",
+            "price": 10,
+            "tags": [],
+        }
+
+        self.assertRaises(jsonschema.exceptions.ValidationError,
+                          jsonschema.validate, instance, self.jsonschema)
