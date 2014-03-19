@@ -152,3 +152,24 @@ class Example1Test(unittest.TestCase):
 
         self.assertRaises(jsonschema.exceptions.ValidationError,
                           jsonschema.validate, instance, self.jsonschema)
+
+    def test_missing_id(self):
+
+        instance = {
+            "name": "A green door",
+            "price": 10,
+            "tags": ["home", "green"],
+        }
+
+        self.assertRaises(jsonschema.exceptions.ValidationError,
+                          jsonschema.validate, instance, self.jsonschema)
+
+    def test_missing_tag(self):
+
+        instance = {
+            "id": 1,
+            "name": "A green door",
+            "price": 10,
+        }
+
+        self.assertIsNone(jsonschema.validate(instance, self.jsonschema))
