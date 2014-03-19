@@ -58,11 +58,10 @@ class RangeNode(SchemaNode):
         super(RangeNode, self).__init__(*args, **kwargs)
         if maximum is not None:
             self["maximum"] = maximum
+            self["exclusiveMaximum"] = max_included
         if minimum is not None:
             self["minimum"] = minimum
-
-        self["exclusive_minimum"] = min_included
-        self["exclusive_maximum"] = max_included
+            self["exclusiveMinimum"] = not min_included
 
 
 def get_jsonschema(schema, title=None, description=None):
