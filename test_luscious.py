@@ -29,7 +29,7 @@ class Example1Test(unittest.TestCase):
             voluptuous.Required("name"): str,
             voluptuous.Required("price"): voluptuous.Range(min=0,
                                                            min_included=False),
-            "tags": list
+            "tags": [str]
         })
 
         self.jsonschema = luscious.get_jsonschema(schema)

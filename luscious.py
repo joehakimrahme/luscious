@@ -12,35 +12,103 @@
 # License for the specific language governing permissions and limitations
 # under the License.
 
+import json
 
-def get_jsonschema(schema):
-    return {
-        "$schema": "http://json-schema.org/draft-04/schema#",
-        "title": "Product",
-        "description": "A product from Acme's catalog",
-        "type": "object",
-        "properties": {
-            "id": {
-                "description": "The unique identifier for a product",
-                "type": "integer"
-            },
-            "name": {
-                "description": "Name of the product",
-                "type": "string"
-            },
-            "price": {
-                "type": "number",
-                "minimum": 0,
-                "exclusiveMinimum": True
-            },
-            "tags": {
-                "type": "array",
-                "items": {
-                    "type": "string"
-                },
-                "minItems": 1,
-                "uniqueItems": True
-            }
-        },
-        "required": ["id", "name", "price"]
-    }
+
+class SchemaNode(dict):
+
+    def __init__(self, description=None, *args, **kwargs):
+        self["type"] = self.typename
+        if description:
+            self["description"] = description
+
+    def __repr__(self):
+        return json.dumps(self, sort_keys=True)
+
+
+class ObjectNode(SchemaNode):
+    typename = "object"
+
+    def __init__(self, properties, *args, **kwargs):
+        super(ObjectNode, self).__init__(*args, **kwargs)
+        self["properties"] = properties
+
+
+class ArrayNode(SchemaNode):
+    typename = "array"
+
+    def __init__(self, items, *args, **kwargs):
+        super(ArrayNode, self).__init__(*args, **kwargs)
+        self["items"] = items
+
+
+class StringNode(SchemaNode):
+    typename = "string"
+
+
+class NumberNode(SchemaNode):
+    typename = "number"
+
+
+class RangeNode(SchemaNode):
+    typename = "number"
+
+    def __init__(self, maximum, max_included=False, minimum=None,
+                 min_included=False, msg=None, *args, **kwargs):
+        super(RangeNode, self).__init__(*args, **kwargs)
+        if maximum is not None:
+            self["maximum"] = maximum
+        if minimum is not None:
+            self["minimum"] = minimum
+
+        self["exclusive_minimum"] = min_included
+        self["exclusive_maximum"] = max_included
+
+
+def get_jsonschema(schema, title=None, description=None):
+
+    jsonschema = jsonify(schema.schema)
+    jsonschema["$schema"] = "http=//json-schema.org/draft-04/schema#"
+
+    if title:
+        jsonschema["title"] = title
+
+    if description:
+        jsonschema["description"] = description
+
+    return jsonschema
+
+
+def jsonify(schema):
+
+    if isinstance(schema, dict):
+        p = {}
+
+        for key, value in schema.iteritems():
+            if hasattr(key, "schema"):
+                key = key.schema
+
+            p[key] = jsonify(value)
+
+        return ObjectNode(properties=p)
+
+    elif isinstance(schema, list):
+        i = {}
+
+        key = schema[0]
+        i["items"] = jsonify(key)
+        return ArrayNode(items=i)
+
+    elif schema is str:
+        return StringNode()
+
+    elif schema is int:
+        return NumberNode()
+
+    elif hasattr(schema, "func_name") and schema.func_name == "Range":
+        # Hackish!
+
+        (maximum, max_included, minimum, min_included, msg) = \
+            [i.cell_contents for i in schema.func_closure]
+
+        return RangeNode(maximum, max_included, minimum, min_included, msg)
