@@ -106,9 +106,13 @@ def jsonify(schema):
         return NumberNode()
 
     elif hasattr(schema, "func_name") and schema.func_name == "Range":
-        # Hackish!
+        range_vars = dict(zip(schema.func_code.co_freevars,
+                              (i.cell_contents for i in schema.func_closure)))
 
-        (maximum, max_included, minimum, min_included, msg) = \
-            [i.cell_contents for i in schema.func_closure]
+        maximum = range_vars['max']
+        max_included = range_vars['max_included']
+        minimum = range_vars['min']
+        min_included = range_vars['min_included']
+        msg = range_vars['msg']
 
         return RangeNode(maximum, max_included, minimum, min_included, msg)
