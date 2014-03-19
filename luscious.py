@@ -14,6 +14,8 @@
 
 import json
 
+import voluptuous
+
 
 class SchemaNode(dict):
 
@@ -29,9 +31,11 @@ class SchemaNode(dict):
 class ObjectNode(SchemaNode):
     typename = "object"
 
-    def __init__(self, properties, *args, **kwargs):
+    def __init__(self, properties, required, *args, **kwargs):
         super(ObjectNode, self).__init__(*args, **kwargs)
         self["properties"] = properties
+        if required:
+            self["required"] = required
 
 
 class ArrayNode(SchemaNode):
@@ -82,14 +86,16 @@ def jsonify(schema):
 
     if isinstance(schema, dict):
         p = {}
+        r = []
 
         for key, value in schema.iteritems():
-            if hasattr(key, "schema"):
+            if isinstance(key, voluptuous.Required):
                 key = key.schema
+                r.append(key)
 
             p[key] = jsonify(value)
 
-        return ObjectNode(properties=p)
+        return ObjectNode(properties=p, required=r)
 
     elif isinstance(schema, list):
         i = {}
