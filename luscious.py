@@ -93,10 +93,8 @@ def jsonify(schema):
         return ObjectNode(properties=p, required=r)
 
     elif isinstance(schema, list):
-        i = {}
-
         key = schema[0]
-        i["items"] = jsonify(key)
+        i = jsonify(key)
         return ArrayNode(items=i)
 
     elif schema is str:
