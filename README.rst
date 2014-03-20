@@ -6,13 +6,13 @@ Luscious, generate json-schema from Voluptuous
 :Credits:   Joe H. Rahme <joe@enovance.com>
 :Licence:   Apache
 
-DESCRIPTION
+Description
 ===========
 
 Luscious provides a simple way to generate json-schema (json-schema.org) from a Voluptuous schema.
 
 
-REQUIREMENT
+Requirement
 ===========
 
 - Voluptuous
@@ -23,10 +23,11 @@ Operating Systems
 
 This has been tested and developed on MacOSX and Linux system, but there's no reason why it shouldn't work on other systems.
 
-USAGE
+Usage
 ======
 
 Here's how to generate a valid schema::
+
   >>> import voluptuous
   >>> schema = voluptuous.Schema({
   ... voluptuous.Required("id"): int,
@@ -36,36 +37,32 @@ Here's how to generate a valid schema::
   ... })
   >>> from luscious import get_jsonschema
   >>> print json.dumps(get_jsonschema(schema), indent=4)
-  {
-      "$schema": "http=//json-schema.org/draft-04/schema#",
-      "required": [
-          "name",
-          "id",
-          "price"
-      ],
-      "type": "object",
-      "properties": {
-          "id": {
-              "type": "number"
-          },
-          "price": {
-              "exclusiveMinimum": true,
-              "minimum": 0,
-              "type": "number"
-          },
-          "name": {
-              "type": "string"
-          },
-          "tags": {
-              "items": {
-                  "items": {
-                      "type": "string"
-                  }
-              },
-              "type": "array"
-          }
-      }
-  }
+     "$schema": "http=//json-schema.org/draft-04/schema#",
+     "required": [
+         "id",
+         "name",
+         "price"
+     ],
+     "type": "object",
+     "properties": {
+         "price": {
+             "exclusiveMinimum": true,
+             "minimum": 0,
+             "type": "number"
+         },
+         "id": {
+             "type": "number"
+         },
+         "name": {
+             "type": "string"
+         },
+         "tags": {
+             "items": {
+                 "type": "string"
+             },
+             "type": "array"
+         }
+     }
 
 Author
 ======
