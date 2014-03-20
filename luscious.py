@@ -12,8 +12,6 @@
 # License for the specific language governing permissions and limitations
 # under the License.
 
-import json
-
 import voluptuous
 
 
@@ -23,9 +21,6 @@ class SchemaNode(dict):
         self["type"] = self.typename
         if description:
             self["description"] = description
-
-    def __repr__(self):
-        return json.dumps(self, sort_keys=True)
 
 
 class ObjectNode(SchemaNode):
